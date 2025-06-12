@@ -621,18 +621,21 @@ Jeff,66`;
             
             data.forEach(person => {
                 const achievementPercent = person.target > 0 ? (person.actual / person.target) * 100 : 0;
-                let statusClass = 'status-danger';
-                let statusText = 'Needs Attention';
+                const projectedPercent = person.target > 0 ? (person.projected / person.target) * 100 : 0;
                 
-                if (achievementPercent >= 90) {
+                // Status based on projected vs target (how they're tracking to hit target)
+                let statusClass = 'status-danger';
+                let statusText = 'Off Track';
+                
+                if (projectedPercent >= 100) {
                     statusClass = 'status-excellent';
-                    statusText = 'Excellent';
-                } else if (achievementPercent >= 70) {
+                    statusText = 'On Track+';
+                } else if (projectedPercent >= 90) {
                     statusClass = 'status-good';
-                    statusText = 'Good';
-                } else if (achievementPercent >= 50) {
+                    statusText = 'On Track';
+                } else if (projectedPercent >= 70) {
                     statusClass = 'status-warning';
-                    statusText = 'Below Target';
+                    statusText = 'At Risk';
                 }
                 
                 const row = document.createElement('tr');
