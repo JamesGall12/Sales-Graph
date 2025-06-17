@@ -6,11 +6,53 @@
   <title>Greencare Sales Dashboard - Live</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
-    /* Your full existing CSS remains unchanged - assumed already styled as shown in your original code */
+    body {
+      background-color: #0f172a;
+      color: white;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .metric-card {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 10px;
+      text-align: center;
+    }
+    .chart-container {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    .loading {
+      text-align: center;
+      padding: 100px;
+    }
   </style>
 </head>
 <body>
-  <!-- Your full existing HTML structure here -->
+  <div id="loading" class="loading">
+    <h2>Loading sales data...</h2>
+  </div>
+
+  <div id="dashboard" style="display: none;">
+    <h1>🚀 Greencare Sales Dashboard</h1>
+    <div class="metric-card">
+      <div><strong>Team Target:</strong> <span id="teamTarget">0</span></div>
+      <div><strong>Team Projected:</strong> <span id="teamProjected">0</span></div>
+      <div><strong>Team Actual:</strong> <span id="teamActual">0</span></div>
+      <div><strong>Achievement Rate:</strong> <span id="achievementRate">0%</span></div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="performanceChart" height="200"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="achievementChart" height="200"></canvas>
+    </div>
+  </div>
 
   <script>
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pub?gid=1556175923&single=true&output=csv";
@@ -64,20 +106,63 @@
       return salesPeople;
     }
 
+    function updateDashboard(data) {
+      const teamTarget = data.reduce((sum, p) => sum + p.target, 0);
+      const teamProjected = data.reduce((sum, p) => sum + p.projected, 0);
+      const teamActual = data.reduce((sum, p) => sum + p.actual, 0);
+      const achievementRate = teamTarget > 0 ? (teamActual / teamTarget) * 100 : 0;
+
+      document.getElementById("teamTarget").textContent = teamTarget;
+      document.getElementById("teamProjected").textContent = teamProjected;
+      document.getElementById("teamActual").textContent = teamActual;
+      document.getElementById("achievementRate").textContent = achievementRate.toFixed(1) + "%";
+
+      updateCharts(data);
+    }
+
+    function updateCharts(data) {
+      if (charts.performance) charts.performance.destroy();
+      const ctx1 = document.getElementById("performanceChart").getContext("2d");
+      charts.performance = new Chart(ctx1, {
+        type: "bar",
+        data: {
+          labels: data.map(p => p.name),
+          datasets: [
+            { label: "Target", data: data.map(p => p.target), backgroundColor: "#3b82f6" },
+            { label: "Projected", data: data.map(p => p.projected), backgroundColor: "#8b5cf6" },
+            { label: "Actual", data: data.map(p => p.actual), backgroundColor: "#10b981" },
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: "white" } } }, scales: { x: { ticks: { color: "white" } }, y: { ticks: { color: "white" } } } }
+      });
+
+      if (charts.achievement) charts.achievement.destroy();
+      const ctx2 = document.getElementById("achievementChart").getContext("2d");
+      charts.achievement = new Chart(ctx2, {
+        type: "doughnut",
+        data: {
+          labels: data.map(p => p.name),
+          datasets: [{
+            data: data.map(p => p.actual / p.target * 100),
+            backgroundColor: ["#3b82f6", "#8b5cf6", "#ec4899", "#10b981"]
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: "white" } } } }
+      });
+    }
+
     async function loadDashboard() {
       const data = await fetchSalesData();
       if (!data.length) {
-        document.getElementById('loading').innerHTML = '<p style="color:#ef4444;">Failed to load data</p>';
+        document.getElementById("loading").innerHTML = '<p style="color:red;">Failed to load data</p>';
         return;
       }
       updateDashboard(data);
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
     }
 
-    // Your existing updateDashboard, updatePerformanceChart, updateAchievementChart, updateSalesTable functions remain unchanged
-
-    window.addEventListener('load', loadDashboard);
+    window.addEventListener("load", loadDashboard);
   </script>
 </body>
 </html>
