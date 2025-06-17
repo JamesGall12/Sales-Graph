@@ -398,34 +398,53 @@
     <script>
         let charts = {};
         
-        // Google Sheets CSV URL
-        const SPREADSHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/export?format=csv&gid=1556175923';
+        // Google Sheets public HTML URL
+        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true';
 
         async function fetchSalesData() {
             try {
-                const response = await fetch(SPREADSHEET_CSV_URL);
+                const response = await fetch(SPREADSHEET_URL);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const csvText = await response.text();
-                return csvText;
+                const htmlText = await response.text();
+                return parseHTMLToCSV(htmlText);
             } catch (error) {
                 console.error('Error fetching sales data:', error);
                 // Fallback to hardcoded data if fetch fails
                 return `Sales targets - June ,
 June Sales Graph,Number
 Target 1,220
-Projected - Candice,275
-Candice,100
+Projected - Candice,279
+Candice,152
 Target 2,168
-Pojected - Kurt,19
-Kurt,7
+Pojected - Kurt,18
+Kurt,10
 Target 3,154
-Pojected - Ed,176
-Projected - Jeff,182
-Ed,64
-Jeff,66`;
+Pojected - Ed,196
+Projected - Jeff,204
+Ed,107
+Jeff,111`;
             }
+        }
+
+        function parseHTMLToCSV(htmlText) {
+            // Extract the data from the HTML structure
+            const lines = htmlText.split('\n');
+            let csvData = "Sales targets - June ,\nJune Sales Graph,Number\n";
+            
+            // Look for the pattern in the HTML text
+            const dataPattern = /(Target \d+|Projected? - \w+|\w+)\s+(\d+)/g;
+            let match;
+            
+            while ((match = dataPattern.exec(htmlText)) !== null) {
+                const label = match[1].trim();
+                const value = match[2].trim();
+                csvData += `${label},${value}\n`;
+            }
+            
+            console.log('Extracted CSV data:', csvData);
+            return csvData;
         }
 
         function parseSalesData(csvText) {
@@ -672,13 +691,36 @@ Jeff,66`;
                 const data = parseSalesData(csvData);
                 console.log('Parsed sales data:', data);
                 
+                if (data.length === 0) {
+                    throw new Error('No valid sales data found');
+                }
+                
                 updateDashboard(data);
                 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
             } catch (error) {
                 console.error('Error loading dashboard:', error);
+                // Use fallback data
+                const fallbackCSV = `Sales targets - June ,
+June Sales Graph,Number
+Target 1,220
+Projected - Candice,279
+Candice,152
+Target 2,168
+Pojected - Kurt,18
+Kurt,10
+Target 3,154
+Pojected - Ed,196
+Projected - Jeff,204
+Ed,107
+Jeff,111`;
+                
+                const data = parseSalesData(fallbackCSV);
+                updateDashboard(data);
+                
                 document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
             }
         }
 
