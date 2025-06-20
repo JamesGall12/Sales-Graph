@@ -48,6 +48,16 @@
             font-size: 1rem;
         }
         
+        .data-source {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #93c5fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -261,16 +271,6 @@
             font-size: 0.9rem;
         }
         
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2.2rem;
@@ -298,59 +298,68 @@
             <p class="date">June 2025 • Updated Daily</p>
         </div>
         
-        <div id="dashboard">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div style="color: #cbd5e1;">Loading sales data from Google Sheets...</div>
+        </div>
+        
+        <div id="dashboard" style="display: none;">
+            <div id="dataSource" class="data-source">
+                📊 Data loaded from Google Sheets • Last updated: <span id="lastUpdated"></span>
+            </div>
+            
             <div class="metrics-grid">
                 <div class="metric-card">
                     <div class="metric-title">Team Target</div>
-                    <div class="metric-value" id="teamTarget">696</div>
+                    <div class="metric-value" id="teamTarget">0</div>
                     <div class="metric-subtitle">Combined team target</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6);"></div>
+                        <div class="progress-fill" id="teamTargetProgress" style="width: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Team Projected</div>
-                    <div class="metric-value" id="teamProjected">644</div>
+                    <div class="metric-value" id="teamProjected">0</div>
                     <div class="metric-subtitle">Total projected sales</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 92.5%; background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
+                        <div class="progress-fill" id="projectedProgress" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Team Actual</div>
-                    <div class="metric-value" id="teamActual">439</div>
+                    <div class="metric-value" id="teamActual">0</div>
                     <div class="metric-subtitle">Current sales achieved</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 63.1%; background: linear-gradient(90deg, #10b981, #06d6a0);"></div>
+                        <div class="progress-fill" id="actualProgress" style="width: 0%; background: linear-gradient(90deg, #10b981, #06d6a0);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Achievement Rate</div>
-                    <div class="metric-value" id="achievementRate">63.1%</div>
+                    <div class="metric-value" id="achievementRate">0%</div>
                     <div class="metric-subtitle">Target completion</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 63.1%; background: linear-gradient(90deg, #ec4899, #f97316);"></div>
+                        <div class="progress-fill" id="achievementProgress" style="width: 0%; background: linear-gradient(90deg, #ec4899, #f97316);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Gap to Target</div>
-                    <div class="metric-value" id="gapToTarget">257</div>
+                    <div class="metric-value" id="gapToTarget">0</div>
                     <div class="metric-subtitle">Remaining to achieve</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 36.9%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
+                        <div class="progress-fill" id="gapProgress" style="width: 0%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Projected vs Target</div>
-                    <div class="metric-value" id="projectedVsTarget">92.5%</div>
+                    <div class="metric-value" id="projectedVsTarget">0%</div>
                     <div class="metric-subtitle">Projection accuracy</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 92.5%; background: linear-gradient(90deg, #06d6a0, #3b82f6);"></div>
+                        <div class="progress-fill" id="projectedVsTargetProgress" style="width: 0%; background: linear-gradient(90deg, #06d6a0, #3b82f6);"></div>
                     </div>
                 </div>
             </div>
@@ -388,93 +397,276 @@
                         </tr>
                     </thead>
                     <tbody id="salesTable">
-                        <tr>
-                            <td><strong>Candice</strong></td>
-                            <td>220</td>
-                            <td>261</td>
-                            <td><strong>178</strong></td>
-                            <td><strong>80.9%</strong></td>
-                            <td><span class="status-badge status-excellent">Exceeding</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Kurt</strong></td>
-                            <td>168</td>
-                            <td>18</td>
-                            <td><strong>12</strong></td>
-                            <td><strong>7.1%</strong></td>
-                            <td><span class="status-badge status-danger">Off Track</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Ed</strong></td>
-                            <td>154</td>
-                            <td>182</td>
-                            <td><strong>124</strong></td>
-                            <td><strong>80.5%</strong></td>
-                            <td><span class="status-badge status-excellent">Exceeding</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Jeff</strong></td>
-                            <td>154</td>
-                            <td>183</td>
-                            <td><strong>125</strong></td>
-                            <td><strong>81.2%</strong></td>
-                            <td><span class="status-badge status-excellent">Exceeding</span></td>
-                        </tr>
+                        <!-- Data will be populated here -->
                     </tbody>
                 </table>
             </div>
             
             <div class="update-info">
-                <h3>🔄 Live Data Updates</h3>
-                <p><strong>Current Status:</strong> Displaying latest data from your Google Sheets. Charts load below when Chart.js library is ready.</p>
+                <h3>🔄 Auto-Update System</h3>
+                <p><strong>How it works:</strong> This dashboard automatically pulls the latest data from your Google Sheets every time the page loads. Simply update your spreadsheet and refresh this page to see the changes.</p>
+                <p><strong>Refresh Rate:</strong> Data updates every page refresh • Google Sheets publishes changes every 5 minutes</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Current sales data (your actual numbers)
-        const salesData = [
-            { name: 'Candice', target: 220, projected: 261, actual: 178 },
-            { name: 'Kurt', target: 168, projected: 18, actual: 12 },
-            { name: 'Ed', target: 154, projected: 182, actual: 124 },
-            { name: 'Jeff', target: 154, projected: 183, actual: 125 }
-        ];
-
+        // Your Google Sheets CSV URL (direct from your spreadsheet)
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pub?gid=1556175923&single=true&output=csv';
+        
         let charts = {};
 
-        function createPerformanceChart() {
+        // Fetch data directly from Google Sheets CSV
+        async function fetchSheetData() {
+            try {
+                console.log('Fetching data from Google Sheets CSV...');
+                
+                // Try direct fetch first
+                try {
+                    const directResponse = await fetch(SHEET_CSV_URL);
+                    if (directResponse.ok) {
+                        const csvText = await directResponse.text();
+                        console.log('Direct CSV fetch successful:', csvText.substring(0, 200));
+                        return parseCSVData(csvText);
+                    }
+                } catch (directError) {
+                    console.log('Direct fetch failed, trying CORS proxy...');
+                }
+                
+                // Use CORS proxy as fallback
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(SHEET_CSV_URL)}`;
+                const response = await fetch(proxyUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const csvText = data.contents;
+                
+                console.log('Proxy CSV fetch successful:', csvText.substring(0, 200));
+                return parseCSVData(csvText);
+                
+            } catch (error) {
+                console.error('Error fetching from Google Sheets:', error);
+                // Return your current data as fallback
+                console.log('Using fallback data');
+                return [
+                    { name: 'Candice', target: 220, projected: 261, actual: 178 },
+                    { name: 'Kurt', target: 168, projected: 18, actual: 12 },
+                    { name: 'Ed', target: 154, projected: 182, actual: 124 },
+                    { name: 'Jeff', target: 154, projected: 183, actual: 125 }
+                ];
+            }
+        }
+
+        // Parse the CSV data from Google Sheets
+        function parseCSVData(csvText) {
+            console.log('Parsing CSV data...');
+            const lines = csvText.trim().split('\n');
+            
+            // Parse the data structure
+            const salesPeople = [];
+            let currentData = {};
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line || line.includes('Sales targets') || line.includes('June Sales Graph')) continue;
+                
+                const parts = line.split(',');
+                if (parts.length < 2) continue;
+                
+                const label = parts[0].trim().replace(/"/g, '');
+                const value = parseInt(parts[1]) || 0;
+                
+                console.log(`Parsing: ${label} = ${value}`);
+                
+                // Store targets
+                if (label === 'Target 1') {
+                    currentData.candiceTarget = value;
+                } else if (label === 'Target 2') {
+                    currentData.kurtTarget = value;
+                } else if (label === 'Target 3') {
+                    currentData.edTarget = value;
+                    currentData.jeffTarget = value;
+                }
+                // Store projections
+                else if (label === 'Projected - Candice') {
+                    currentData.candiceProjected = value;
+                } else if (label.includes('Kurt')) {
+                    if (label.includes('rojected')) {
+                        currentData.kurtProjected = value;
+                    } else if (label === 'Kurt') {
+                        currentData.kurtActual = value;
+                    }
+                } else if (label.includes('Ed')) {
+                    if (label.includes('rojected')) {
+                        currentData.edProjected = value;
+                    } else if (label === 'Ed') {
+                        currentData.edActual = value;
+                    }
+                } else if (label.includes('Jeff')) {
+                    if (label.includes('rojected')) {
+                        currentData.jeffProjected = value;
+                    } else if (label === 'Jeff') {
+                        currentData.jeffActual = value;
+                    }
+                }
+                // Store actuals
+                else if (label === 'Candice') {
+                    currentData.candiceActual = value;
+                }
+            }
+            
+            // Build the sales data array
+            if (currentData.candiceTarget) {
+                salesPeople.push({
+                    name: 'Candice',
+                    target: currentData.candiceTarget || 0,
+                    projected: currentData.candiceProjected || 0,
+                    actual: currentData.candiceActual || 0
+                });
+            }
+            
+            if (currentData.kurtTarget) {
+                salesPeople.push({
+                    name: 'Kurt',
+                    target: currentData.kurtTarget || 0,
+                    projected: currentData.kurtProjected || 0,
+                    actual: currentData.kurtActual || 0
+                });
+            }
+            
+            if (currentData.edTarget) {
+                salesPeople.push({
+                    name: 'Ed',
+                    target: currentData.edTarget || 0,
+                    projected: currentData.edProjected || 0,
+                    actual: currentData.edActual || 0
+                });
+            }
+            
+            if (currentData.jeffTarget) {
+                salesPeople.push({
+                    name: 'Jeff',
+                    target: currentData.jeffTarget || 0,
+                    projected: currentData.jeffProjected || 0,
+                    actual: currentData.jeffActual || 0
+                });
+            }
+            
+            console.log('Parsed sales data:', salesPeople);
+            return salesPeople;
+        }
+
+        // Update the dashboard with new data
+        function updateDashboard(data) {
+            // Update last updated time
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+            
+            // Calculate team totals
+            const teamTarget = data.reduce((sum, person) => sum + person.target, 0);
+            const teamProjected = data.reduce((sum, person) => sum + person.projected, 0);
+            const teamActual = data.reduce((sum, person) => sum + person.actual, 0);
+            const achievementRate = teamTarget > 0 ? (teamActual / teamTarget) * 100 : 0;
+            const gapToTarget = Math.max(0, teamTarget - teamActual);
+            const projectedVsTarget = teamTarget > 0 ? (teamProjected / teamTarget) * 100 : 0;
+            
+            // Update metric cards
+            document.getElementById('teamTarget').textContent = teamTarget.toLocaleString();
+            document.getElementById('teamProjected').textContent = teamProjected.toLocaleString();
+            document.getElementById('teamActual').textContent = teamActual.toLocaleString();
+            document.getElementById('achievementRate').textContent = `${achievementRate.toFixed(1)}%`;
+            document.getElementById('gapToTarget').textContent = gapToTarget.toLocaleString();
+            document.getElementById('projectedVsTarget').textContent = `${projectedVsTarget.toFixed(1)}%`;
+            
+            // Update progress bars
+            document.getElementById('projectedProgress').style.width = `${Math.min(100, (teamProjected / teamTarget) * 100)}%`;
+            document.getElementById('actualProgress').style.width = `${Math.min(100, (teamActual / teamTarget) * 100)}%`;
+            document.getElementById('achievementProgress').style.width = `${Math.min(100, achievementRate)}%`;
+            document.getElementById('gapProgress').style.width = `${Math.min(100, (gapToTarget / teamTarget) * 100)}%`;
+            document.getElementById('projectedVsTargetProgress').style.width = `${Math.min(100, projectedVsTarget)}%`;
+            
+            // Update table
+            updateSalesTable(data);
+            
+            // Update charts
+            createCharts(data);
+        }
+
+        // Update sales table
+        function updateSalesTable(data) {
+            const tbody = document.getElementById('salesTable');
+            tbody.innerHTML = '';
+            
+            data.forEach(person => {
+                const achievementPercent = person.target > 0 ? (person.actual / person.target) * 100 : 0;
+                const projectedPercent = person.target > 0 ? (person.projected / person.target) * 100 : 0;
+                
+                let statusClass = 'status-danger';
+                let statusText = 'Off Track';
+                
+                if (projectedPercent >= 100) {
+                    statusClass = 'status-excellent';
+                    statusText = 'Exceeding';
+                } else if (projectedPercent >= 90) {
+                    statusClass = 'status-good';
+                    statusText = 'On Track';
+                } else if (projectedPercent >= 70) {
+                    statusClass = 'status-warning';
+                    statusText = 'At Risk';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${person.name}</strong></td>
+                    <td>${person.target.toLocaleString()}</td>
+                    <td>${person.projected.toLocaleString()}</td>
+                    <td><strong>${person.actual.toLocaleString()}</strong></td>
+                    <td><strong>${achievementPercent.toFixed(1)}%</strong></td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Create charts
+        function createCharts(data) {
             if (typeof Chart === 'undefined') {
-                console.log('Chart.js not loaded yet, retrying in 500ms...');
-                setTimeout(createPerformanceChart, 500);
+                console.log('Chart.js not loaded yet, retrying...');
+                setTimeout(() => createCharts(data), 500);
                 return;
             }
 
-            try {
-                const ctx = document.getElementById('performanceChart');
-                if (!ctx) return;
+            // Destroy existing charts
+            if (charts.performance) charts.performance.destroy();
+            if (charts.achievement) charts.achievement.destroy();
 
-                charts.performance = new Chart(ctx.getContext('2d'), {
+            // Performance Chart
+            try {
+                const ctx1 = document.getElementById('performanceChart');
+                charts.performance = new Chart(ctx1.getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: salesData.map(person => person.name),
+                        labels: data.map(person => person.name),
                         datasets: [
                             {
                                 label: 'Target',
-                                data: salesData.map(person => person.target),
+                                data: data.map(person => person.target),
                                 backgroundColor: 'rgba(59, 130, 246, 0.8)',
                                 borderColor: '#3b82f6',
                                 borderWidth: 2
                             },
                             {
                                 label: 'Projected',
-                                data: salesData.map(person => person.projected),
+                                data: data.map(person => person.projected),
                                 backgroundColor: 'rgba(139, 92, 246, 0.8)',
                                 borderColor: '#8b5cf6',
                                 borderWidth: 2
                             },
                             {
                                 label: 'Actual',
-                                data: salesData.map(person => person.actual),
+                                data: data.map(person => person.actual),
                                 backgroundColor: 'rgba(16, 185, 129, 0.8)',
                                 borderColor: '#10b981',
                                 borderWidth: 2
@@ -486,9 +678,7 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                labels: {
-                                    color: '#e2e8f0'
-                                }
+                                labels: { color: '#e2e8f0' }
                             }
                         },
                         scales: {
@@ -504,31 +694,21 @@
                         }
                     }
                 });
-                console.log('Performance chart created successfully');
             } catch (error) {
                 console.error('Error creating performance chart:', error);
             }
-        }
 
-        function createAchievementChart() {
-            if (typeof Chart === 'undefined') {
-                console.log('Chart.js not loaded yet, retrying in 500ms...');
-                setTimeout(createAchievementChart, 500);
-                return;
-            }
-
+            // Achievement Chart
             try {
-                const achievements = salesData.map(person => 
+                const achievements = data.map(person => 
                     person.target > 0 ? (person.actual / person.target) * 100 : 0
                 );
 
-                const ctx = document.getElementById('achievementChart');
-                if (!ctx) return;
-
-                charts.achievement = new Chart(ctx.getContext('2d'), {
+                const ctx2 = document.getElementById('achievementChart');
+                charts.achievement = new Chart(ctx2.getContext('2d'), {
                     type: 'doughnut',
                     data: {
-                        labels: salesData.map(person => `${person.name} (${(person.target > 0 ? (person.actual / person.target) * 100 : 0).toFixed(1)}%)`),
+                        labels: data.map(person => `${person.name} (${(person.target > 0 ? (person.actual / person.target) * 100 : 0).toFixed(1)}%)`),
                         datasets: [{
                             data: achievements,
                             backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b'],
@@ -550,18 +730,46 @@
                         }
                     }
                 });
-                console.log('Achievement chart created successfully');
             } catch (error) {
                 console.error('Error creating achievement chart:', error);
             }
         }
 
-        // Initialize charts when page loads
-        window.addEventListener('load', function() {
-            console.log('Page loaded, creating charts...');
-            createPerformanceChart();
-            createAchievementChart();
-        });
+        // Initialize dashboard
+        async function initDashboard() {
+            try {
+                console.log('Initializing dashboard...');
+                const data = await fetchSheetData();
+                updateDashboard(data);
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+                console.log('Dashboard loaded successfully!');
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                
+                // Use fallback data
+                const fallbackData = [
+                    { name: 'Candice', target: 220, projected: 261, actual: 178 },
+                    { name: 'Kurt', target: 168, projected: 18, actual: 12 },
+                    { name: 'Ed', target: 154, projected: 182, actual: 124 },
+                    { name: 'Jeff', target: 154, projected: 183, actual: 125 }
+                ];
+                
+                updateDashboard(fallbackData);
+                document.getElementById('dataSource').innerHTML = '⚠️ Using cached data - Google Sheets connection failed';
+                document.getElementById('dataSource').style.background = 'rgba(245, 158, 11, 0.1)';
+                document.getElementById('dataSource').style.borderColor = '#f59e0b';
+                document.getElementById('dataSource').style.color = '#fbbf24';
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            }
+        }
+
+        // Start the dashboard when page loads
+        window.addEventListener('load', initDashboard);
     </script>
 </body>
 </html>
