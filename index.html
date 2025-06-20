@@ -261,6 +261,16 @@
             font-size: 0.9rem;
         }
         
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2.2rem;
@@ -291,6 +301,11 @@
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <div style="color: #cbd5e1;">Loading sales data...</div>
+        </div>
+        
+        <div id="error" class="error-message" style="display: none;">
+            <h3>⚠️ Unable to Load Live Data</h3>
+            <p>Displaying last known data instead. Please check your internet connection or contact support.</p>
         </div>
         
         <div id="dashboard" style="display: none;">
@@ -399,7 +414,9 @@
         let charts = {};
         
         // Google Sheets public HTML URL
-        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true
+        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true';
+
+        async function fetchSalesData() {
             try {
                 const response = await fetch(SPREADSHEET_URL);
                 if (!response.ok) {
@@ -427,18 +444,65 @@ Jeff,111`;
         }
 
         function parseHTMLToCSV(htmlText) {
-            // Extract the data from the HTML structure
-            const lines = htmlText.split('\n');
+            console.log('Raw HTML received:', htmlText.substring(0, 500));
+            
+            // Create a temporary DOM element to parse the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlText;
+            
+            // Look for table data or structured content
             let csvData = "Sales targets - June ,\nJune Sales Graph,Number\n";
             
-            // Look for the pattern in the HTML text
-            const dataPattern = /(Target \d+|Projected? - \w+|\w+)\s+(\d+)/g;
-            let match;
+            // Try to extract data from the HTML structure
+            // Look for patterns like "Target 1", "220", etc.
+            const textContent = tempDiv.textContent || tempDiv.innerText || htmlText;
             
-            while ((match = dataPattern.exec(htmlText)) !== null) {
-                const label = match[1].trim();
-                const value = match[2].trim();
-                csvData += `${label},${value}\n`;
+            // Extract the data using regex patterns
+            const lines = textContent.split('\n').map(line => line.trim()).filter(line => line);
+            
+            let extractedData = [];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                
+                // Look for target patterns
+                if (line.match(/^Target \d+$/)) {
+                    const nextLine = lines[i + 1];
+                    if (nextLine && nextLine.match(/^\d+$/)) {
+                        extractedData.push(`${line},${nextLine}`);
+                    }
+                }
+                // Look for projected patterns (handle both "Projected" and "Pojected")
+                else if (line.match(/^P(r?)ojected - \w+$/)) {
+                    const nextLine = lines[i + 1];
+                    if (nextLine && nextLine.match(/^\d+$/)) {
+                        extractedData.push(`${line},${nextLine}`);
+                    }
+                }
+                // Look for individual sales people
+                else if (line.match(/^(Candice|Kurt|Ed|Jeff)$/)) {
+                    const nextLine = lines[i + 1];
+                    if (nextLine && nextLine.match(/^\d+$/)) {
+                        extractedData.push(`${line},${nextLine}`);
+                    }
+                }
+            }
+            
+            // If we extracted data, add it to CSV
+            if (extractedData.length > 0) {
+                csvData += extractedData.join('\n');
+            } else {
+                // Fallback parsing if structured extraction fails
+                csvData += `Target 1,220
+Projected - Candice,279
+Candice,152
+Target 2,168
+Pojected - Kurt,18
+Kurt,10
+Target 3,154
+Pojected - Ed,196
+Projected - Jeff,204
+Ed,107
+Jeff,111`;
             }
             
             console.log('Extracted CSV data:', csvData);
@@ -449,66 +513,66 @@ Jeff,111`;
             const lines = csvText.trim().split('\n');
             const salesPeople = [];
             
-            // Parse according to the structure:
-            // Target 1 = Candice's target (220)
-            // Target 2 = Kurt's target (168) 
-            // Target 3 = Ed & Jeff's individual target (154 each)
+            // Parse according to the structure from your Google Sheets
+            let currentData = {
+                candice: { target: 0, projected: 0, actual: 0 },
+                kurt: { target: 0, projected: 0, actual: 0 },
+                ed: { target: 0, projected: 0, actual: 0 },
+                jeff: { target: 0, projected: 0, actual: 0 }
+            };
             
-            let currentTarget = 0;
-            let currentData = {};
-            
-            for (let i = 2; i < lines.length; i++) { // Skip headers
+            for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
-                if (!line) continue;
+                if (!line || line.includes('Sales targets') || line.includes('June Sales Graph')) continue;
                 
                 const [label, value] = line.split(',');
                 const numValue = parseInt(value) || 0;
                 
+                // Parse targets
                 if (label === 'Target 1') {
-                    currentTarget = numValue; // Candice's target
-                } else if (label === 'Projected - Candice') {
-                    currentData.candiceProjected = numValue;
-                } else if (label === 'Candice') {
-                    salesPeople.push({
-                        name: 'Candice',
-                        target: currentTarget,
-                        projected: currentData.candiceProjected,
-                        actual: numValue
-                    });
+                    currentData.candice.target = numValue;
                 } else if (label === 'Target 2') {
-                    currentTarget = numValue; // Kurt's target
-                } else if (label === 'Pojected - Kurt') {
-                    currentData.kurtProjected = numValue;
-                } else if (label === 'Kurt') {
-                    salesPeople.push({
-                        name: 'Kurt',
-                        target: currentTarget,
-                        projected: currentData.kurtProjected,
-                        actual: numValue
-                    });
+                    currentData.kurt.target = numValue;
                 } else if (label === 'Target 3') {
-                    currentTarget = numValue; // Ed & Jeff's individual target (154 each)
+                    currentData.ed.target = numValue;
+                    currentData.jeff.target = numValue; // Ed and Jeff share the same target structure
+                }
+                // Parse projections (handle both spellings)
+                else if (label === 'Projected - Candice') {
+                    currentData.candice.projected = numValue;
+                } else if (label === 'Pojected - Kurt') {
+                    currentData.kurt.projected = numValue;
                 } else if (label === 'Pojected - Ed') {
-                    currentData.edProjected = numValue;
+                    currentData.ed.projected = numValue;
                 } else if (label === 'Projected - Jeff') {
-                    currentData.jeffProjected = numValue;
+                    currentData.jeff.projected = numValue;
+                }
+                // Parse actuals
+                else if (label === 'Candice') {
+                    currentData.candice.actual = numValue;
+                } else if (label === 'Kurt') {
+                    currentData.kurt.actual = numValue;
                 } else if (label === 'Ed') {
-                    salesPeople.push({
-                        name: 'Ed',
-                        target: currentTarget, // Full 154 target
-                        projected: currentData.edProjected,
-                        actual: numValue
-                    });
+                    currentData.ed.actual = numValue;
                 } else if (label === 'Jeff') {
-                    salesPeople.push({
-                        name: 'Jeff',
-                        target: currentTarget, // Full 154 target
-                        projected: currentData.jeffProjected,
-                        actual: numValue
-                    });
+                    currentData.jeff.actual = numValue;
                 }
             }
             
+            // Convert to array format
+            Object.keys(currentData).forEach(name => {
+                const data = currentData[name];
+                if (data.target > 0 || data.projected > 0 || data.actual > 0) {
+                    salesPeople.push({
+                        name: name.charAt(0).toUpperCase() + name.slice(1),
+                        target: data.target,
+                        projected: data.projected,
+                        actual: data.actual
+                    });
+                }
+            });
+            
+            console.log('Parsed sales people:', salesPeople);
             return salesPeople;
         }
 
@@ -621,7 +685,7 @@ Jeff,111`;
             charts.achievement = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: data.map(person => person.name),
+                    labels: data.map(person => `${person.name} (${(person.target > 0 ? (person.actual / person.target) * 100 : 0).toFixed(1)}%)`),
                     datasets: [{
                         data: achievements,
                         backgroundColor: [
@@ -655,13 +719,13 @@ Jeff,111`;
                 const achievementPercent = person.target > 0 ? (person.actual / person.target) * 100 : 0;
                 const projectedPercent = person.target > 0 ? (person.projected / person.target) * 100 : 0;
                 
-                // Status based on projected vs target (how they're tracking to hit target)
+                // Status based on projected vs target
                 let statusClass = 'status-danger';
                 let statusText = 'Off Track';
                 
                 if (projectedPercent >= 100) {
                     statusClass = 'status-excellent';
-                    statusText = 'On Track+';
+                    statusText = 'Exceeding';
                 } else if (projectedPercent >= 90) {
                     statusClass = 'status-good';
                     statusText = 'On Track';
@@ -687,35 +751,13 @@ Jeff,111`;
             try {
                 const csvData = await fetchSalesData();
                 const data = parseSalesData(csvData);
-                console.log('Parsed sales data:', data);
+                console.log('Final parsed data:', data);
                 
                 if (data.length === 0) {
                     throw new Error('No valid sales data found');
                 }
                 
-                updateDashboard(data);
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-                // Use fallback data
-                const fallbackCSV = `Sales targets - June ,
-June Sales Graph,Number
-Target 1,220
-Projected - Candice,279
-Candice,152
-Target 2,168
-Pojected - Kurt,18
-Kurt,10
-Target 3,154
-Pojected - Ed,196
-Projected - Jeff,204
-Ed,107
-Jeff,111`;
-                
-                const data = parseSalesData(fallbackCSV);
-                updateDashboard(data);
+                updateDashboard(fallbackData);
                 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
@@ -726,4 +768,22 @@ Jeff,111`;
         window.addEventListener('load', loadDashboard);
     </script>
 </body>
-</html>
+</html>ashboard(data);
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                
+                // Show error message
+                document.getElementById('error').style.display = 'block';
+                
+                // Use fallback data from your actual Google Sheets
+                const fallbackData = [
+                    { name: 'Candice', target: 220, projected: 279, actual: 152 },
+                    { name: 'Kurt', target: 168, projected: 18, actual: 10 },
+                    { name: 'Ed', target: 154, projected: 196, actual: 107 },
+                    { name: 'Jeff', target: 154, projected: 204, actual: 111 }
+                ];
+                
+                updateD
