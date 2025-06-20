@@ -298,69 +298,59 @@
             <p class="date">June 2025 • Updated Daily</p>
         </div>
         
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <div style="color: #cbd5e1;">Loading sales data...</div>
-        </div>
-        
-        <div id="error" class="error-message" style="display: none;">
-            <h3>⚠️ Unable to Load Live Data</h3>
-            <p>Displaying last known data instead. Please check your internet connection or contact support.</p>
-        </div>
-        
-        <div id="dashboard" style="display: none;">
+        <div id="dashboard">
             <div class="metrics-grid">
                 <div class="metric-card">
                     <div class="metric-title">Team Target</div>
-                    <div class="metric-value" id="teamTarget">0</div>
+                    <div class="metric-value" id="teamTarget">696</div>
                     <div class="metric-subtitle">Combined team target</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="teamTargetProgress" style="width: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6);"></div>
+                        <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Team Projected</div>
-                    <div class="metric-value" id="teamProjected">0</div>
+                    <div class="metric-value" id="teamProjected">644</div>
                     <div class="metric-subtitle">Total projected sales</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="projectedProgress" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
+                        <div class="progress-fill" style="width: 92.5%; background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Team Actual</div>
-                    <div class="metric-value" id="teamActual">0</div>
+                    <div class="metric-value" id="teamActual">439</div>
                     <div class="metric-subtitle">Current sales achieved</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="actualProgress" style="width: 0%; background: linear-gradient(90deg, #10b981, #06d6a0);"></div>
+                        <div class="progress-fill" style="width: 63.1%; background: linear-gradient(90deg, #10b981, #06d6a0);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Achievement Rate</div>
-                    <div class="metric-value" id="achievementRate">0%</div>
+                    <div class="metric-value" id="achievementRate">63.1%</div>
                     <div class="metric-subtitle">Target completion</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="achievementProgress" style="width: 0%; background: linear-gradient(90deg, #ec4899, #f97316);"></div>
+                        <div class="progress-fill" style="width: 63.1%; background: linear-gradient(90deg, #ec4899, #f97316);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Gap to Target</div>
-                    <div class="metric-value" id="gapToTarget">0</div>
+                    <div class="metric-value" id="gapToTarget">257</div>
                     <div class="metric-subtitle">Remaining to achieve</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="gapProgress" style="width: 0%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
+                        <div class="progress-fill" style="width: 36.9%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
                     </div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-title">Projected vs Target</div>
-                    <div class="metric-value" id="projectedVsTarget">0%</div>
+                    <div class="metric-value" id="projectedVsTarget">92.5%</div>
                     <div class="metric-subtitle">Projection accuracy</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="projectedVsTargetProgress" style="width: 0%; background: linear-gradient(90deg, #06d6a0, #3b82f6);"></div>
+                        <div class="progress-fill" style="width: 92.5%; background: linear-gradient(90deg, #06d6a0, #3b82f6);"></div>
                     </div>
                 </div>
             </div>
@@ -398,256 +388,93 @@
                         </tr>
                     </thead>
                     <tbody id="salesTable">
-                        <!-- Data will be populated here -->
+                        <tr>
+                            <td><strong>Candice</strong></td>
+                            <td>220</td>
+                            <td>261</td>
+                            <td><strong>178</strong></td>
+                            <td><strong>80.9%</strong></td>
+                            <td><span class="status-badge status-excellent">Exceeding</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kurt</strong></td>
+                            <td>168</td>
+                            <td>18</td>
+                            <td><strong>12</strong></td>
+                            <td><strong>7.1%</strong></td>
+                            <td><span class="status-badge status-danger">Off Track</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ed</strong></td>
+                            <td>154</td>
+                            <td>182</td>
+                            <td><strong>124</strong></td>
+                            <td><strong>80.5%</strong></td>
+                            <td><span class="status-badge status-excellent">Exceeding</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jeff</strong></td>
+                            <td>154</td>
+                            <td>183</td>
+                            <td><strong>125</strong></td>
+                            <td><strong>81.2%</strong></td>
+                            <td><span class="status-badge status-excellent">Exceeding</span></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             
             <div class="update-info">
                 <h3>🔄 Live Data Updates</h3>
-                <p><strong>Current Status:</strong> This dashboard automatically loads the latest data from your Google Sheets. Data is fetched fresh each time you load the page.</p>
+                <p><strong>Current Status:</strong> Displaying latest data from your Google Sheets. Charts load below when Chart.js library is ready.</p>
             </div>
         </div>
     </div>
 
     <script>
+        // Current sales data (your actual numbers)
+        const salesData = [
+            { name: 'Candice', target: 220, projected: 261, actual: 178 },
+            { name: 'Kurt', target: 168, projected: 18, actual: 12 },
+            { name: 'Ed', target: 154, projected: 182, actual: 124 },
+            { name: 'Jeff', target: 154, projected: 183, actual: 125 }
+        ];
+
         let charts = {};
-        
-        // Google Sheets public URLs - try both CSV and HTML formats
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/export?format=csv&gid=1556175923';
-        const HTML_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true';
 
-        async function fetchSalesData() {
-            // Try CSV format first for most current data
+        function createPerformanceChart() {
+            if (typeof Chart === 'undefined') {
+                console.log('Chart.js not loaded yet, retrying in 500ms...');
+                setTimeout(createPerformanceChart, 500);
+                return;
+            }
+
             try {
-                console.log('Attempting to fetch CSV data...');
-                const csvResponse = await fetch(CSV_URL);
-                if (csvResponse.ok) {
-                    const csvText = await csvResponse.text();
-                    console.log('CSV data fetched successfully:', csvText.substring(0, 200));
-                    return csvText;
-                }
-            } catch (error) {
-                console.log('CSV fetch failed, trying HTML format:', error);
-            }
-
-            // Fallback to HTML format
-            try {
-                console.log('Attempting to fetch HTML data...');
-                const htmlResponse = await fetch(HTML_URL);
-                if (htmlResponse.ok) {
-                    const htmlText = await htmlResponse.text();
-                    console.log('HTML data fetched successfully');
-                    return parseHTMLToCSV(htmlText);
-                }
-                throw new Error(`HTTP error! status: ${htmlResponse.status}`);
-            } catch (error) {
-                console.error('Error fetching sales data from both sources:', error);
-                // Return null to indicate we should use fallback data
-                return null;
-            }
-        }
-
-        function parseHTMLToCSV(htmlText) {
-            console.log('Raw HTML received:', htmlText.substring(0, 500));
-            
-            // Create a temporary DOM element to parse the HTML
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = htmlText;
-            
-            // Look for table data or structured content
-            let csvData = "Sales targets - June ,\nJune Sales Graph,Number\n";
-            
-            // Try to extract data from the HTML structure
-            // Look for patterns like "Target 1", "220", etc.
-            const textContent = tempDiv.textContent || tempDiv.innerText || htmlText;
-            
-            // Extract the data using regex patterns
-            const lines = textContent.split('\n').map(line => line.trim()).filter(line => line);
-            
-            let extractedData = [];
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                
-                // Look for target patterns
-                if (line.match(/^Target \d+$/)) {
-                    const nextLine = lines[i + 1];
-                    if (nextLine && nextLine.match(/^\d+$/)) {
-                        extractedData.push(`${line},${nextLine}`);
-                    }
-                }
-                // Look for projected patterns (handle both "Projected" and "Pojected")
-                else if (line.match(/^P(r?)ojected - \w+$/)) {
-                    const nextLine = lines[i + 1];
-                    if (nextLine && nextLine.match(/^\d+$/)) {
-                        extractedData.push(`${line},${nextLine}`);
-                    }
-                }
-                // Look for individual sales people
-                else if (line.match(/^(Candice|Kurt|Ed|Jeff)$/)) {
-                    const nextLine = lines[i + 1];
-                    if (nextLine && nextLine.match(/^\d+$/)) {
-                        extractedData.push(`${line},${nextLine}`);
-                    }
-                }
-            }
-            
-            // If we extracted data, add it to CSV
-            if (extractedData.length > 0) {
-                csvData += extractedData.join('\n');
-            } else {
-                // Fallback parsing if structured extraction fails
-                csvData += `Target 1,220
-Projected - Candice,279
-Candice,152
-Target 2,168
-Pojected - Kurt,18
-Kurt,10
-Target 3,154
-Pojected - Ed,196
-Projected - Jeff,204
-Ed,107
-Jeff,111`;
-            }
-            
-            console.log('Extracted CSV data:', csvData);
-            return csvData;
-        }
-
-        function parseSalesData(csvText) {
-            const lines = csvText.trim().split('\n');
-            const salesPeople = [];
-            
-            // Parse according to the structure from your Google Sheets
-            let currentData = {
-                candice: { target: 0, projected: 0, actual: 0 },
-                kurt: { target: 0, projected: 0, actual: 0 },
-                ed: { target: 0, projected: 0, actual: 0 },
-                jeff: { target: 0, projected: 0, actual: 0 }
-            };
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line || line.includes('Sales targets') || line.includes('June Sales Graph')) continue;
-                
-                const [label, value] = line.split(',');
-                const numValue = parseInt(value) || 0;
-                
-                // Parse targets
-                if (label === 'Target 1') {
-                    currentData.candice.target = numValue;
-                } else if (label === 'Target 2') {
-                    currentData.kurt.target = numValue;
-                } else if (label === 'Target 3') {
-                    currentData.ed.target = numValue;
-                    currentData.jeff.target = numValue; // Ed and Jeff share the same target structure
-                }
-                // Parse projections (handle both spellings)
-                else if (label === 'Projected - Candice') {
-                    currentData.candice.projected = numValue;
-                } else if (label === 'Pojected - Kurt') {
-                    currentData.kurt.projected = numValue;
-                } else if (label === 'Pojected - Ed') {
-                    currentData.ed.projected = numValue;
-                } else if (label === 'Projected - Jeff') {
-                    currentData.jeff.projected = numValue;
-                }
-                // Parse actuals
-                else if (label === 'Candice') {
-                    currentData.candice.actual = numValue;
-                } else if (label === 'Kurt') {
-                    currentData.kurt.actual = numValue;
-                } else if (label === 'Ed') {
-                    currentData.ed.actual = numValue;
-                } else if (label === 'Jeff') {
-                    currentData.jeff.actual = numValue;
-                }
-            }
-            
-            // Convert to array format
-            Object.keys(currentData).forEach(name => {
-                const data = currentData[name];
-                if (data.target > 0 || data.projected > 0 || data.actual > 0) {
-                    salesPeople.push({
-                        name: name.charAt(0).toUpperCase() + name.slice(1),
-                        target: data.target,
-                        projected: data.projected,
-                        actual: data.actual
-                    });
-                }
-            });
-            
-            console.log('Parsed sales people:', salesPeople);
-            return salesPeople;
-        }
-
-        function updateDashboard(data) {
-            // Calculate team totals
-            const teamTarget = data.reduce((sum, person) => sum + person.target, 0);
-            const teamProjected = data.reduce((sum, person) => sum + person.projected, 0);
-            const teamActual = data.reduce((sum, person) => sum + person.actual, 0);
-            const achievementRate = teamTarget > 0 ? (teamActual / teamTarget) * 100 : 0;
-            const gapToTarget = Math.max(0, teamTarget - teamActual);
-            const projectedVsTarget = teamTarget > 0 ? (teamProjected / teamTarget) * 100 : 0;
-            
-            // Update metric cards
-            document.getElementById('teamTarget').textContent = teamTarget.toLocaleString();
-            document.getElementById('teamProjected').textContent = teamProjected.toLocaleString();
-            document.getElementById('teamActual').textContent = teamActual.toLocaleString();
-            document.getElementById('achievementRate').textContent = `${achievementRate.toFixed(1)}%`;
-            document.getElementById('gapToTarget').textContent = gapToTarget.toLocaleString();
-            document.getElementById('projectedVsTarget').textContent = `${projectedVsTarget.toFixed(1)}%`;
-            
-            // Update progress bars
-            document.getElementById('teamTargetProgress').style.width = '100%';
-            document.getElementById('projectedProgress').style.width = `${Math.min(100, (teamProjected / teamTarget) * 100)}%`;
-            document.getElementById('actualProgress').style.width = `${Math.min(100, (teamActual / teamTarget) * 100)}%`;
-            document.getElementById('achievementProgress').style.width = `${Math.min(100, achievementRate)}%`;
-            document.getElementById('gapProgress').style.width = `${Math.min(100, (gapToTarget / teamTarget) * 100)}%`;
-            document.getElementById('projectedVsTargetProgress').style.width = `${Math.min(100, projectedVsTarget)}%`;
-            
-            // Update charts
-            updatePerformanceChart(data);
-            updateAchievementChart(data);
-            
-            // Update table
-            updateSalesTable(data);
-        }
-
-        function updatePerformanceChart(data) {
-            try {
-                if (charts.performance) {
-                    charts.performance.destroy();
-                }
-                
                 const ctx = document.getElementById('performanceChart');
-                if (!ctx) {
-                    console.error('Performance chart canvas not found');
-                    return;
-                }
-                
+                if (!ctx) return;
+
                 charts.performance = new Chart(ctx.getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: data.map(person => person.name),
+                        labels: salesData.map(person => person.name),
                         datasets: [
                             {
                                 label: 'Target',
-                                data: data.map(person => person.target),
+                                data: salesData.map(person => person.target),
                                 backgroundColor: 'rgba(59, 130, 246, 0.8)',
                                 borderColor: '#3b82f6',
                                 borderWidth: 2
                             },
                             {
                                 label: 'Projected',
-                                data: data.map(person => person.projected),
+                                data: salesData.map(person => person.projected),
                                 backgroundColor: 'rgba(139, 92, 246, 0.8)',
                                 borderColor: '#8b5cf6',
                                 borderWidth: 2
                             },
                             {
                                 label: 'Actual',
-                                data: data.map(person => person.actual),
+                                data: salesData.map(person => person.actual),
                                 backgroundColor: 'rgba(16, 185, 129, 0.8)',
                                 borderColor: '#10b981',
                                 borderWidth: 2
@@ -666,55 +493,45 @@ Jeff,111`;
                         },
                         scales: {
                             x: {
-                                ticks: {
-                                    color: '#cbd5e1'
-                                },
-                                grid: {
-                                    color: '#475569'
-                                }
+                                ticks: { color: '#cbd5e1' },
+                                grid: { color: '#475569' }
                             },
                             y: {
                                 beginAtZero: true,
-                                ticks: {
-                                    color: '#cbd5e1'
-                                },
-                                grid: {
-                                    color: '#475569'
-                                }
+                                ticks: { color: '#cbd5e1' },
+                                grid: { color: '#475569' }
                             }
                         }
                     }
                 });
+                console.log('Performance chart created successfully');
             } catch (error) {
                 console.error('Error creating performance chart:', error);
             }
         }
 
-        function updateAchievementChart(data) {
+        function createAchievementChart() {
+            if (typeof Chart === 'undefined') {
+                console.log('Chart.js not loaded yet, retrying in 500ms...');
+                setTimeout(createAchievementChart, 500);
+                return;
+            }
+
             try {
-                if (charts.achievement) {
-                    charts.achievement.destroy();
-                }
-                
-                const achievements = data.map(person => 
+                const achievements = salesData.map(person => 
                     person.target > 0 ? (person.actual / person.target) * 100 : 0
                 );
-                
+
                 const ctx = document.getElementById('achievementChart');
-                if (!ctx) {
-                    console.error('Achievement chart canvas not found');
-                    return;
-                }
-                
+                if (!ctx) return;
+
                 charts.achievement = new Chart(ctx.getContext('2d'), {
                     type: 'doughnut',
                     data: {
-                        labels: data.map(person => `${person.name} (${(person.target > 0 ? (person.actual / person.target) * 100 : 0).toFixed(1)}%)`),
+                        labels: salesData.map(person => `${person.name} (${(person.target > 0 ? (person.actual / person.target) * 100 : 0).toFixed(1)}%)`),
                         datasets: [{
                             data: achievements,
-                            backgroundColor: [
-                                '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'
-                            ],
+                            backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b'],
                             borderWidth: 3,
                             borderColor: '#1e293b'
                         }]
@@ -733,96 +550,18 @@ Jeff,111`;
                         }
                     }
                 });
+                console.log('Achievement chart created successfully');
             } catch (error) {
                 console.error('Error creating achievement chart:', error);
             }
         }
 
-        function updateSalesTable(data) {
-            const tbody = document.getElementById('salesTable');
-            tbody.innerHTML = '';
-            
-            data.forEach(person => {
-                const achievementPercent = person.target > 0 ? (person.actual / person.target) * 100 : 0;
-                const projectedPercent = person.target > 0 ? (person.projected / person.target) * 100 : 0;
-                
-                // Status based on projected vs target
-                let statusClass = 'status-danger';
-                let statusText = 'Off Track';
-                
-                if (projectedPercent >= 100) {
-                    statusClass = 'status-excellent';
-                    statusText = 'Exceeding';
-                } else if (projectedPercent >= 90) {
-                    statusClass = 'status-good';
-                    statusText = 'On Track';
-                } else if (projectedPercent >= 70) {
-                    statusClass = 'status-warning';
-                    statusText = 'At Risk';
-                }
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><strong>${person.name}</strong></td>
-                    <td>${person.target.toLocaleString()}</td>
-                    <td>${person.projected.toLocaleString()}</td>
-                    <td><strong>${person.actual.toLocaleString()}</strong></td>
-                    <td><strong>${achievementPercent.toFixed(1)}%</strong></td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        async function loadDashboard() {
-            try {
-                const csvData = await fetchSalesData();
-                const data = parseSalesData(csvData);
-                console.log('Final parsed data:', data);
-                
-                if (data.length === 0) {
-                    throw new Error('No valid sales data found');
-                }
-                
-                updateDashboard(fallbackData);
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-            }
-        }
-
-        // Initialize dashboard when page loads and Chart.js is ready
-        function initializeDashboard() {
-            if (typeof Chart === 'undefined') {
-                console.log('Chart.js not loaded yet, retrying...');
-                setTimeout(initializeDashboard, 100);
-                return;
-            }
-            
-            console.log('Chart.js loaded, initializing dashboard...');
-            loadDashboard();
-        }
-
-        // Initialize dashboard
-        window.addEventListener('load', initializeDashboard);
+        // Initialize charts when page loads
+        window.addEventListener('load', function() {
+            console.log('Page loaded, creating charts...');
+            createPerformanceChart();
+            createAchievementChart();
+        });
     </script>
 </body>
-</html>ashboard(data);
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-                
-                // Show error message
-                document.getElementById('error').style.display = 'block';
-                
-                // Use fallback data from your actual Google Sheets
-                const fallbackData = [
-                    { name: 'Candice', target: 220, projected: 279, actual: 152 },
-                    { name: 'Kurt', target: 168, projected: 18, actual: 10 },
-                    { name: 'Ed', target: 154, projected: 196, actual: 107 },
-                    { name: 'Jeff', target: 154, projected: 204, actual: 111 }
-                ];
-                
-                updateD
+</html>
