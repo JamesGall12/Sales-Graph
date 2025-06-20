@@ -413,33 +413,38 @@
     <script>
         let charts = {};
         
-        // Google Sheets public HTML URL
-        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true';
+        // Google Sheets public URLs - try both CSV and HTML formats
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/export?format=csv&gid=1556175923';
+        const HTML_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true';
 
         async function fetchSalesData() {
+            // Try CSV format first for most current data
             try {
-                const response = await fetch(SPREADSHEET_URL);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                console.log('Attempting to fetch CSV data...');
+                const csvResponse = await fetch(CSV_URL);
+                if (csvResponse.ok) {
+                    const csvText = await csvResponse.text();
+                    console.log('CSV data fetched successfully:', csvText.substring(0, 200));
+                    return csvText;
                 }
-                const htmlText = await response.text();
-                return parseHTMLToCSV(htmlText);
             } catch (error) {
-                console.error('Error fetching sales data:', error);
-                // Fallback to hardcoded data if fetch fails
-                return `Sales targets - June ,
-June Sales Graph,Number
-Target 1,220
-Projected - Candice,279
-Candice,152
-Target 2,168
-Pojected - Kurt,18
-Kurt,10
-Target 3,154
-Pojected - Ed,196
-Projected - Jeff,204
-Ed,107
-Jeff,111`;
+                console.log('CSV fetch failed, trying HTML format:', error);
+            }
+
+            // Fallback to HTML format
+            try {
+                console.log('Attempting to fetch HTML data...');
+                const htmlResponse = await fetch(HTML_URL);
+                if (htmlResponse.ok) {
+                    const htmlText = await htmlResponse.text();
+                    console.log('HTML data fetched successfully');
+                    return parseHTMLToCSV(htmlText);
+                }
+                throw new Error(`HTTP error! status: ${htmlResponse.status}`);
+            } catch (error) {
+                console.error('Error fetching sales data from both sources:', error);
+                // Return null to indicate we should use fallback data
+                return null;
             }
         }
 
