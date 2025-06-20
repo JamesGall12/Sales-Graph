@@ -399,9 +399,7 @@
         let charts = {};
         
         // Google Sheets public HTML URL
-        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true';
-
-        async function fetchSalesData() {
+        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pubhtml?gid=1556175923&single=true
             try {
                 const response = await fetch(SPREADSHEET_URL);
                 if (!response.ok) {
