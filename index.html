@@ -462,16 +462,19 @@
         // Parse the CSV data from Google Sheets
         function parseCSVData(csvText) {
             console.log('Parsing CSV data...');
-            const lines = csvText.trim().split('\n');
+            console.log('Raw CSV:', csvText);
             
-            // Parse the data structure
+            const lines = csvText.trim().split('\n');
+            console.log('Total lines:', lines.length);
+            
+            // Parse the data structure - improved logic
             const salesPeople = [];
-            let currentPerson = null;
-            let currentTarget = 0;
+            const tempData = {};
+            let lastTarget = 0;
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
-                if (!line || line.includes('Sales targets') || line.includes('July Sales Graph')) continue;
+                if (!line || line.includes('Sales targets') || line.includes('July Sales Graph') || line.includes('Number')) continue;
                 
                 const parts = line.split(',');
                 if (parts.length < 2) continue;
@@ -479,27 +482,45 @@
                 const label = parts[0].trim().replace(/"/g, '');
                 const value = parseInt(parts[1]) || 0;
                 
-                console.log(`Parsing: ${label} = ${value}`);
+                console.log(`Line ${i}: "${label}" = ${value}`);
                 
-                // New structure: Target → Projected - Name → Name (actual)
+                // Store targets
                 if (label === 'Target') {
-                    currentTarget = value;
-                } else if (label.startsWith('Projected - ')) {
-                    const name = label.replace('Projected - ', '');
-                    currentPerson = {
-                        name: name,
-                        target: currentTarget,
-                        projected: value,
-                        actual: 0
-                    };
-                } else if (currentPerson && label === currentPerson.name) {
-                    currentPerson.actual = value;
-                    salesPeople.push(currentPerson);
-                    currentPerson = null;
+                    lastTarget = value;
+                    console.log('Set target to:', lastTarget);
+                }
+                // Store projections
+                else if (label.startsWith('Projected - ')) {
+                    const name = label.replace('Projected - ', '').trim();
+                    if (!tempData[name]) tempData[name] = {};
+                    tempData[name].target = lastTarget;
+                    tempData[name].projected = value;
+                    tempData[name].name = name;
+                    console.log(`Set ${name} projection:`, tempData[name]);
+                }
+                // Store actuals
+                else if (label === 'Jeff' || label === 'Candice' || label === 'Ed') {
+                    if (!tempData[label]) tempData[label] = {};
+                    tempData[label].actual = value;
+                    tempData[label].name = label;
+                    console.log(`Set ${label} actual:`, tempData[label]);
                 }
             }
             
-            console.log('Parsed sales data:', salesPeople);
+            // Convert tempData to array
+            for (const person in tempData) {
+                const data = tempData[person];
+                if (data.target && data.projected !== undefined && data.actual !== undefined) {
+                    salesPeople.push({
+                        name: data.name,
+                        target: data.target || 0,
+                        projected: data.projected || 0,
+                        actual: data.actual || 0
+                    });
+                }
+            }
+            
+            console.log('Final parsed sales data:', salesPeople);
             return salesPeople;
         }
 
