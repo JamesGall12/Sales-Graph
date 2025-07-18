@@ -467,57 +467,54 @@
             const lines = csvText.trim().split('\n');
             console.log('Total lines:', lines.length);
             
-            // Parse the data structure - improved logic
+            // Parse the data structure based on exact cell positions
             const salesPeople = [];
-            const tempData = {};
-            let lastTarget = 0;
+            const values = [];
             
+            // Extract just the numeric values from column B
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line || line.includes('Sales targets') || line.includes('July Sales Graph') || line.includes('Number')) continue;
                 
                 const parts = line.split(',');
-                if (parts.length < 2) continue;
-                
-                const label = parts[0].trim().replace(/"/g, '');
-                const value = parseInt(parts[1]) || 0;
-                
-                console.log(`Line ${i}: "${label}" = ${value}`);
-                
-                // Store targets
-                if (label === 'Target') {
-                    lastTarget = value;
-                    console.log('Set target to:', lastTarget);
-                }
-                // Store projections
-                else if (label.startsWith('Projected - ')) {
-                    const name = label.replace('Projected - ', '').trim();
-                    if (!tempData[name]) tempData[name] = {};
-                    tempData[name].target = lastTarget;
-                    tempData[name].projected = value;
-                    tempData[name].name = name;
-                    console.log(`Set ${name} projection:`, tempData[name]);
-                }
-                // Store actuals
-                else if (label === 'Jeff' || label === 'Candice' || label === 'Ed') {
-                    if (!tempData[label]) tempData[label] = {};
-                    tempData[label].actual = value;
-                    tempData[label].name = label;
-                    console.log(`Set ${label} actual:`, tempData[label]);
+                if (parts.length >= 2) {
+                    const value = parseInt(parts[1]) || 0;
+                    values.push(value);
+                    console.log(`Row ${i}: Value = ${value}`);
                 }
             }
             
-            // Convert tempData to array
-            for (const person in tempData) {
-                const data = tempData[person];
-                if (data.target && data.projected !== undefined && data.actual !== undefined) {
-                    salesPeople.push({
-                        name: data.name,
-                        target: data.target || 0,
-                        projected: data.projected || 0,
-                        actual: data.actual || 0
-                    });
-                }
+            console.log('Extracted values:', values);
+            
+            // Map values to people based on your specification:
+            // A3 = Jeff Target, A4 = Jeff projected, A5 = Jeff sales
+            // A6 = Candice Target, A7 = Candice projected, A8 = Candice sales  
+            // A9 = Ed Target, A10 = Ed projected, A11 = Ed sales
+            
+            if (values.length >= 9) {
+                // Jeff (positions 0, 1, 2 in our values array)
+                salesPeople.push({
+                    name: 'Jeff',
+                    target: values[0] || 0,
+                    projected: values[1] || 0,
+                    actual: values[2] || 0
+                });
+                
+                // Candice (positions 3, 4, 5 in our values array)
+                salesPeople.push({
+                    name: 'Candice',
+                    target: values[3] || 0,
+                    projected: values[4] || 0,
+                    actual: values[5] || 0
+                });
+                
+                // Ed (positions 6, 7, 8 in our values array)
+                salesPeople.push({
+                    name: 'Ed',
+                    target: values[6] || 0,
+                    projected: values[7] || 0,
+                    actual: values[8] || 0
+                });
             }
             
             console.log('Final parsed sales data:', salesPeople);
