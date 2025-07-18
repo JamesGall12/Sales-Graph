@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greencare Sales Dashboard - June 2025</title>
+    <title>Greencare Sales Dashboard - July 2025</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
@@ -295,7 +295,7 @@
         <div class="header">
             <h1>🚀 Greencare Sales Dashboard</h1>
             <p>Real-Time Sales Performance & Target Tracking</p>
-            <p class="date">June 2025 • Updated Daily</p>
+            <p class="date">July 2025 • Updated Daily</p>
         </div>
         
         <div id="loading" class="loading">
@@ -411,8 +411,8 @@
     </div>
 
     <script>
-        // Your Google Sheets CSV URL (direct from your spreadsheet)
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pub?gid=1556175923&single=true&output=csv';
+        // Your Google Sheets CSV URL (updated to new sheet)
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnA9kBH4aes-Z3UQKFtbRbWBPx9TkDoKd48GddRxYM38rZCFq9ZRABBSainXk9WpHaEGVMi2STlk4V/pub?gid=1915613868&single=true&output=csv';
         
         let charts = {};
 
@@ -452,10 +452,9 @@
                 // Return your current data as fallback
                 console.log('Using fallback data');
                 return [
-                    { name: 'Candice', target: 220, projected: 261, actual: 178 },
-                    { name: 'Kurt', target: 168, projected: 18, actual: 12 },
-                    { name: 'Ed', target: 154, projected: 182, actual: 124 },
-                    { name: 'Jeff', target: 154, projected: 183, actual: 125 }
+                    { name: 'Jeff', target: 135, projected: 166, actual: 98 },
+                    { name: 'Candice', target: 192, projected: 294, actual: 174 },
+                    { name: 'Ed', target: 134, projected: 223, actual: 132 }
                 ];
             }
         }
@@ -467,11 +466,12 @@
             
             // Parse the data structure
             const salesPeople = [];
-            let currentData = {};
+            let currentPerson = null;
+            let currentTarget = 0;
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
-                if (!line || line.includes('Sales targets') || line.includes('June Sales Graph')) continue;
+                if (!line || line.includes('Sales targets') || line.includes('July Sales Graph')) continue;
                 
                 const parts = line.split(',');
                 if (parts.length < 2) continue;
@@ -481,78 +481,22 @@
                 
                 console.log(`Parsing: ${label} = ${value}`);
                 
-                // Store targets
-                if (label === 'Target 1') {
-                    currentData.candiceTarget = value;
-                } else if (label === 'Target 2') {
-                    currentData.kurtTarget = value;
-                } else if (label === 'Target 3') {
-                    currentData.edTarget = value;
-                    currentData.jeffTarget = value;
+                // New structure: Target → Projected - Name → Name (actual)
+                if (label === 'Target') {
+                    currentTarget = value;
+                } else if (label.startsWith('Projected - ')) {
+                    const name = label.replace('Projected - ', '');
+                    currentPerson = {
+                        name: name,
+                        target: currentTarget,
+                        projected: value,
+                        actual: 0
+                    };
+                } else if (currentPerson && label === currentPerson.name) {
+                    currentPerson.actual = value;
+                    salesPeople.push(currentPerson);
+                    currentPerson = null;
                 }
-                // Store projections
-                else if (label === 'Projected - Candice') {
-                    currentData.candiceProjected = value;
-                } else if (label.includes('Kurt')) {
-                    if (label.includes('rojected')) {
-                        currentData.kurtProjected = value;
-                    } else if (label === 'Kurt') {
-                        currentData.kurtActual = value;
-                    }
-                } else if (label.includes('Ed')) {
-                    if (label.includes('rojected')) {
-                        currentData.edProjected = value;
-                    } else if (label === 'Ed') {
-                        currentData.edActual = value;
-                    }
-                } else if (label.includes('Jeff')) {
-                    if (label.includes('rojected')) {
-                        currentData.jeffProjected = value;
-                    } else if (label === 'Jeff') {
-                        currentData.jeffActual = value;
-                    }
-                }
-                // Store actuals
-                else if (label === 'Candice') {
-                    currentData.candiceActual = value;
-                }
-            }
-            
-            // Build the sales data array
-            if (currentData.candiceTarget) {
-                salesPeople.push({
-                    name: 'Candice',
-                    target: currentData.candiceTarget || 0,
-                    projected: currentData.candiceProjected || 0,
-                    actual: currentData.candiceActual || 0
-                });
-            }
-            
-            if (currentData.kurtTarget) {
-                salesPeople.push({
-                    name: 'Kurt',
-                    target: currentData.kurtTarget || 0,
-                    projected: currentData.kurtProjected || 0,
-                    actual: currentData.kurtActual || 0
-                });
-            }
-            
-            if (currentData.edTarget) {
-                salesPeople.push({
-                    name: 'Ed',
-                    target: currentData.edTarget || 0,
-                    projected: currentData.edProjected || 0,
-                    actual: currentData.edActual || 0
-                });
-            }
-            
-            if (currentData.jeffTarget) {
-                salesPeople.push({
-                    name: 'Jeff',
-                    target: currentData.jeffTarget || 0,
-                    projected: currentData.jeffProjected || 0,
-                    actual: currentData.jeffActual || 0
-                });
             }
             
             console.log('Parsed sales data:', salesPeople);
@@ -751,10 +695,9 @@
                 
                 // Use fallback data
                 const fallbackData = [
-                    { name: 'Candice', target: 220, projected: 261, actual: 178 },
-                    { name: 'Kurt', target: 168, projected: 18, actual: 12 },
-                    { name: 'Ed', target: 154, projected: 182, actual: 124 },
-                    { name: 'Jeff', target: 154, projected: 183, actual: 125 }
+                    { name: 'Jeff', target: 135, projected: 166, actual: 98 },
+                    { name: 'Candice', target: 192, projected: 294, actual: 174 },
+                    { name: 'Ed', target: 134, projected: 223, actual: 132 }
                 ];
                 
                 updateDashboard(fallbackData);
